@@ -12,18 +12,28 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     IWhitelist whitelist;
 
+    bool public presaleStarted;
+
+    uint256 public presaleEnded;
+
+    uint256 public maxTokenIds = 20;
+
+    uint256 public tokenIds;
+
     constructor(string memory _baseURI, address whitelistContract) ERC721("Cryoto Devs", "CD") {
-        _baseTokenURI = _baseURI
+        _baseTokenURI = _baseURI;
         whitelist = IWhitelist(whitelistContract);
         
     }
 
     function startPresale() public onlyOwner {
-        presaleStarted = true
+        presaleStarted = true;
+        presaleEnded = block.timestamp + 5 minutes;
 
     }
 
     function presaleMint() public payable {
+        require(presaleStarted && block.timestamp < presaleEnded, "Presale ended");
 
     }
 
