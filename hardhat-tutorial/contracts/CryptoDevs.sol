@@ -17,6 +17,8 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     uint256 public tokenIds;
 
+    uint256 public _price = 0.01 ether;
+
     constructor(string memory _baseURI, address whitelistContract) ERC721("Cryoto Devs", "CD") {
         _baseTokenURI = _baseURI;
         whitelist = IWhitelist(whitelistContract);
@@ -31,6 +33,13 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     function presaleMint() public payable {
         require(presaleStarted && block.timestamp < presaleEnded, "Presale ended");
+        require(whitelist.whitelistAddresses(msg.sender), "You are not in whitelist"); 
+        require(tokenIds < maxTokenIds, "Exceeded limit");
+        require(msg.value >= _price, "Ether sent is not correct");
+
+        tokenIds += 1;
+
+        _safeMint(msg.sender, tokenIds);
 
     }
 
