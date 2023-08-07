@@ -22,7 +22,7 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     uint256 public _price = 0.01 ether;
 
-    bool public _paused
+    bool public _paused;
 
     modifier onlyWhenNotPaused {
         require(!_paused, "Contract currently paused");
