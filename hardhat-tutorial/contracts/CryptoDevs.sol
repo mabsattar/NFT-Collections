@@ -22,8 +22,15 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     uint256 public _price = 0.01 ether;
 
-    constructor(string memory _baseURI, address whitelistContract) ERC721("Cryoto Devs", "CD") {
-        _baseTokenURI = _baseURI;
+    bool public _paused
+
+    modifier onlyWhenNotPaused {
+        require(!_paused, "Contract currently paused");
+        _;
+    }
+
+    constructor(string memory baseURI, address whitelistContract) ERC721("Cryoto Devs", "CD") {
+        _baseTokenURI = baseURI;
         whitelist = IWhitelist(whitelistContract);
         
     }
@@ -34,7 +41,7 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     }
 
-    function presaleMint() public payable {
+    function presaleMint() public payable onlyWhenNotPaused {
         require(presaleStarted && block.timestamp < presaleEnded, "Presale ended");
         require(whitelist.whitelistedAddresses(msg.sender), "You are not in whitelist");
         require(tokenIds < maxTokenIds, "Exceeded the limit");
@@ -46,7 +53,7 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     }
 
-    function mint() public payable {
+    function mint() public payable onlyWhenNotPaused {
         require(presaleStarted && block.timestamp >= presaleEnded, "Presale has not ended yet");
         require(tokenIds < maxTokenIds, "Exceeded the limit");
         require(msg.value >= _price, "Ether sent is not correct");
@@ -58,6 +65,10 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
 
     function _baseURI() internal view override returns (string memory) {
         return _baseTokenURI;
+    }
+
+    function setPaused(bool val) public onlyOwner {
+        _paused = val;
     }
 
     function withdraw() public onlyOwner {
