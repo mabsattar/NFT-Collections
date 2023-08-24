@@ -1,95 +1,62 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import { useEffect, useRef, useState } from "react";
+import Web3Modal from "web3modal";
+import ethers from "ethers";
+import styles from "../styles/page.module.css"
+
+
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const [walletconnected, setWalletConnected] = useState(false);
+  const web3ModalRef = useRef();
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+  const connectWallet = async () => {
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+  };
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
+  const getProviderOrSigner = async (needSigner = false) => {
+    // we need to gain accecss to the provider/signer from Metamask
+    const provider = await web3ModalRef.current.connect();
+    const web3Provider = new ethers.providers.web3Provider(provider);
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    //if the user is not connected to Goerly, ask them to switch to Goerli
+    const { chainID } = await web3Provider.getNetwork();
+    if (chainId !==5) {
+      window.alert("Please switch to Goerli network")
+      throw new Error("incorrect network");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+
+    return web3Provider;
+  };
+  
+
+
+  useEffect{() => {
+    if (!walletConnected) {
+      web3ModalRef.current = new Web3Modal({
+        network: "Goerli",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
+
+      connectWallet();
+    }
+  }, []};
+
+  
+
+
+  return  {
+
+    <div>
+
+
+  }
+  
+  
 }
