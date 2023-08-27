@@ -1,9 +1,12 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
 import ethers from "ethers";
-import styles from "../styles/page.module.css"
+import styles from './page.module.css'
 
 
+'useClient';
 
 export default function Home() {
   const [walletconnected, setWalletConnected] = useState(false);
@@ -36,7 +39,7 @@ export default function Home() {
   
 
 
-  useEffect{() => {
+  useEffect(() => {
     if (!walletConnected) {
       web3ModalRef.current = new Web3Modal({
         network: "Goerli",
@@ -46,17 +49,30 @@ export default function Home() {
 
       connectWallet();
     }
-  }, []};
+  }, []);
 
   
 
 
-  return  {
+  return (
 
     <div>
+      <head>
+        <title> Crypto Devs NFT </title>
+      </head>
 
+      <div className={styles.main}>
+        <button onClick={connectWallet} className={styles.button}>
+          Connect Wallet
+        </button>
+      </div>
+    </div>
 
-  }
+  ); 
+    
+   
+
+  
   
   
 }
