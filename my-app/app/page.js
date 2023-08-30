@@ -1,28 +1,60 @@
-"use client";
+'use client';
 
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import Web3Modal from "web3modal";
-import { ethers }  from "ethers";
+import  Web3Modal  from "web3modal";
+import  { providers, Contract } from "ethers";
 import styles from './page.module.css';
+import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/constants/Index";
 
 
 export default function Home() {
+  const [presaleStarted, setPresaleStarted] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
+  const startPresale = async () => {
+    try {
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const checkIfPresaleStarted = async () => {
+    try {
+      
+      const provider = await getProviderOrSigner();
+
+      const nftContract = new Contract(
+        NFT_CONTRACT_ADDRESS, 
+        NFT_CONTRACT_ABI,
+        provider
+      );
+
+      const isPresaleStarted = await nftContract.presaleStarted();
+      setPresaleStarted(isPresaleStarted);
+    } catch (error) {
+      console.error(error)      
+    }
+  };
+
   const connectWallet = async () => {
-    await getProviderOrSigner();
-    setWalletConnected(true);
+    try {
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
 
   const getProviderOrSigner = async (needSigner = false) => {
     // we need to gain accecss to the provider/signer from Metamask
     const provider = await web3ModalRef.current.connect();
-    const web3Provider = new ethers.BrowserProvider(provider);
+    const web3Provider = new providers.Web3Provider(provider);
 
-    //if the user is not connected to Goerly, ask them to switch to Sepolia
+    //if the user is not connected to Sepolia, ask them to switch to Sepolia
     const { chainId } = await web3Provider.getNetwork();
     if (chainId !== 11155111) {
       window.alert("Please switch to Sepolia network");
