@@ -9,23 +9,79 @@ import { NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI } from "@/constants/Index";
 
 
 export default function Home() {
+  const [isOwner, setIsOwner] = useState(false);
   const [presaleStarted, setPresaleStarted] = useState(false);
+  const [preSaleEnded, setPresaleEnded] = useState(false);
   const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
+  const getOwner = async () => {
+    try {
+      const signer = await getProviderOrSigner();
+
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
+
+      const owner = nftContract.owner();
+      const userAddress = signer.getAddress();
+
+      if (owner.toLowerCase() === userAddress.ToLowerCase()) {
+        setIsOwner(true);
+      }
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+
   const startPresale = async () => {
     try {
-      
+      const signer = await getProviderOrSigner(true);
+
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, signer);
+
+      const txn = await nftContract.StartPresale();
+      await txn.wait();
+
+      setPresaleStarted(true);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
+  const checkIfPresaleEnded = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+    
+      //Get an instance of your NFT Contract
+      const nftContract = new Contract(
+        NFT_CONTRACT_ADDRESS, 
+        NFT_CONTRACT_ABI,
+        provider
+      );
+
+      // this will return a BigNumber because presaleEnded is a uint 256
+      // this will return a timestamp in seconds
+
+      const presaleEndTime = await nftContract.presaleEnded();
+      const currentTimeinSeconds = Data.now() / 1000;
+      const hasPresaleEnded = presaleEndTime.lt(
+        math.floor(currentTimeinSeconds)
+      );
+
+      
+      setPresaleEnded(hasPresaleEnded);
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
 
   const checkIfPresaleStarted = async () => {
     try {
       
       const provider = await getProviderOrSigner();
 
+      // get an instance of your NFT Contract
       const nftContract = new Contract(
         NFT_CONTRACT_ADDRESS, 
         NFT_CONTRACT_ABI,
