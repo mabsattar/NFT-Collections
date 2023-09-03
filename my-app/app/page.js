@@ -130,12 +130,14 @@ export default function Home() {
   useEffect(() => {
     if (!walletConnected) {
       web3ModalRef.current = new Web3Modal({
-        network: "Sepolia",
+        network: "sepolia",
         providerOptions: {},
         disableInjectedProvider: false,
       });
 
       connectWallet();
+
+      checkIfPresaleStarted();
     }
   }, []);
 
